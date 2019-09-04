@@ -28,6 +28,15 @@ var gcpCmd = &cobra.Command{
 	Long:  `Ping GCP regions and print median latency.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("gcp called")
+
+		e := &endpoints{}
+		// for r, i := range endpoints.gcpEndpoints {
+		// 	e := endpoints{
+		// 		region:  r,
+		// 		name:    gcpEndpintsName[r],
+		// 		address: i,
+		// 	}
+		// }
 	},
 }
 

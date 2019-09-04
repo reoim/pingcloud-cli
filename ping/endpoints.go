@@ -1,4 +1,4 @@
-package main
+package ping
 
 var gcpEndpoints = map[string]string{
 	"global":                  "35.186.221.153",
