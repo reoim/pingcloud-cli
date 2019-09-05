@@ -17,7 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 
+	"github.com/reoim/pingcloud-cli/ping"
+	"github.com/reoim/pingcloud-cli/ping/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +31,24 @@ var awsCmd = &cobra.Command{
 	Short: "Ping AWS regions",
 	Long:  `Ping AWS regions and print latencyß`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("aws called")
+		// Init tabwriter
+		tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
+		fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
+		fmt.Fprintln(tr)
+		fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
+		fmt.Fprintln(tr)
+
+		// Flush tabwriter
+		tr.Flush()
+
+		for r, i := range aws.AWSEndpoints {
+			e := ping.Endpoints{
+				Region:  r,
+				Name:    aws.AWSRegions[r],
+				Address: i,
+			}
+			e.Ping()
+		}
 	},
 }
 
