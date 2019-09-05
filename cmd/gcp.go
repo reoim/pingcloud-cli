@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/reoim/pingcloud-cli/ping/gcp"
 	"github.com/spf13/cobra"
 )
 
@@ -29,14 +30,17 @@ var gcpCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("gcp called")
 
-		e := &endpoints{}
-		// for r, i := range endpoints.gcpEndpoints {
-		// 	e := endpoints{
-		// 		region:  r,
-		// 		name:    gcpEndpintsName[r],
-		// 		address: i,
-		// 	}
-		// }
+		for r, i := range gcp.GCPEndpoints {
+			e := gcp.Endpoints{
+				Region:  r,
+				Name:    gcp.GCPEndpointsName[r],
+				Address: i,
+			}
+			// e.TestPrint()
+			go e.Ping()
+			// fmt.Println(out.Name+" "+out.Region+" "+out.Address+"Latency: ", out.Latency)
+			//fmt.Println(output.Latency)
+		}
 	},
 }
 

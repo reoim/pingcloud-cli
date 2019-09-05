@@ -15,8 +15,10 @@ limitations under the License.
 */
 package main
 
-import "github.com/reoim/pingcloud-cli/cmd"
+import (
+	"github.com/reoim/pingcloud-cli/cmd"
+)
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
