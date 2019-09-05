@@ -17,7 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 
+	"github.com/reoim/pingcloud-cli/ping"
 	"github.com/reoim/pingcloud-cli/ping/gcp"
 	"github.com/spf13/cobra"
 )
@@ -28,16 +31,25 @@ var gcpCmd = &cobra.Command{
 	Short: "Ping GCP regions",
 	Long:  `Ping GCP regions and print median latency.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("gcp called")
+		// fmt.Println("gcp called")
+
+		// Init tabwriter
+		tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
+		fmt.Fprintf(tr, "Region\tCity, State, Country\tLatency")
+		fmt.Fprintln(tr)
+		fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
+		fmt.Fprintln(tr)
+		// Flush tabwriter
+		tr.Flush()
 
 		for r, i := range gcp.GCPEndpoints {
-			e := gcp.Endpoints{
+			e := ping.Endpoints{
 				Region:  r,
 				Name:    gcp.GCPEndpointsName[r],
 				Address: i,
 			}
 			// e.TestPrint()
-			go e.Ping()
+			e.Ping()
 			// fmt.Println(out.Name+" "+out.Region+" "+out.Address+"Latency: ", out.Latency)
 			//fmt.Println(output.Latency)
 		}
