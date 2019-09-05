@@ -31,27 +31,24 @@ var gcpCmd = &cobra.Command{
 	Short: "Ping GCP regions",
 	Long:  `Ping GCP regions and print median latency.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// fmt.Println("gcp called")
 
 		// Init tabwriter
 		tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-		fmt.Fprintf(tr, "Region\tCity, State, Country\tLatency")
+		fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
 		fmt.Fprintln(tr)
 		fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
 		fmt.Fprintln(tr)
+
 		// Flush tabwriter
 		tr.Flush()
 
 		for r, i := range gcp.GCPEndpoints {
 			e := ping.Endpoints{
 				Region:  r,
-				Name:    gcp.GCPEndpointsName[r],
+				Name:    gcp.GCPRegions[r],
 				Address: i,
 			}
-			// e.TestPrint()
 			e.Ping()
-			// fmt.Println(out.Name+" "+out.Region+" "+out.Address+"Latency: ", out.Latency)
-			//fmt.Println(output.Latency)
 		}
 	},
 }

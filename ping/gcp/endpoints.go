@@ -24,7 +24,7 @@ var GCPEndpoints = map[string]string{
 	"us-west2":                "http://35.236.45.25/ping",
 }
 
-var GCPEndpointsName = map[string]string{
+var GCPRegions = map[string]string{
 	"global":                  "Global HTTP Load Balancer",
 	"asia-east1":              "Changhua County, Taiwan",
 	"asia-east2":              "Hong Kong",
