@@ -17,7 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 
+	"github.com/reoim/pingcloud-cli/ping"
+	"github.com/reoim/pingcloud-cli/ping/azure"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +31,24 @@ var azureCmd = &cobra.Command{
 	Short: "Ping Azure regions",
 	Long:  `Ping Azure regions and print latency`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("azure called")
+		// Init tabwriter
+		tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
+		fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
+		fmt.Fprintln(tr)
+		fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
+		fmt.Fprintln(tr)
+
+		// Flush tabwriter
+		tr.Flush()
+
+		for r, i := range azure.AZUREEndpoints {
+			p := ping.PingDto{
+				Region:  r,
+				Name:    azure.AZURERegions[r],
+				Address: i,
+			}
+			p.Ping()
+		}
 	},
 }
 
