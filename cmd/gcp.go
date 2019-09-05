@@ -25,6 +25,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// used for flags
+var region string
+
 // gcpCmd represents the gcp command
 var gcpCmd = &cobra.Command{
 	Use:   "gcp",
@@ -50,11 +53,13 @@ var gcpCmd = &cobra.Command{
 			}
 			p.Ping()
 		}
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(gcpCmd)
+	gcpCmd.Flags().StringVarP(&region, "region", "r", "", "Print http trace time information of the region.")
 
 	// Here you will define your flags and configuration settings.
 
