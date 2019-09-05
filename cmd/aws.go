@@ -42,12 +42,12 @@ var awsCmd = &cobra.Command{
 		tr.Flush()
 
 		for r, i := range aws.AWSEndpoints {
-			e := ping.Endpoints{
+			p := ping.PingDto{
 				Region:  r,
 				Name:    aws.AWSRegions[r],
 				Address: i,
 			}
-			e.Ping()
+			p.Ping()
 		}
 	},
 }

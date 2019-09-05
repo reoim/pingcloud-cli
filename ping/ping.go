@@ -9,20 +9,20 @@ import (
 	"time"
 )
 
-type Endpoints struct {
+type PingDto struct {
 	Region  string
 	Name    string
 	Address string
 	Latency time.Duration
 }
 
-func (e *Endpoints) TestPrint() {
-	fmt.Println("Region: " + e.Region)
-	fmt.Println("Name: " + e.Name)
-	fmt.Println("Address: " + e.Address)
+func (p *PingDto) TestPrint() {
+	fmt.Println("Region: " + p.Region)
+	fmt.Println("Name: " + p.Name)
+	fmt.Println("Address: " + p.Address)
 }
 
-func (e *Endpoints) Ping() {
+func (p *PingDto) Ping() {
 
 	// Init tabwriter
 	tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
@@ -31,7 +31,7 @@ func (e *Endpoints) Ping() {
 	start := time.Now()
 
 	// Create a new HTTP request
-	req, err := http.NewRequest("GET", e.Address, nil)
+	req, err := http.NewRequest("GET", p.Address, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,10 +39,10 @@ func (e *Endpoints) Ping() {
 	// Send request by default HTTP client
 	client := http.DefaultClient
 	res, err := client.Do(req)
-	result := Endpoints{
-		Region:  e.Region,
-		Name:    e.Name,
-		Address: e.Address,
+	result := PingDto{
+		Region:  p.Region,
+		Name:    p.Name,
+		Address: p.Address,
 		Latency: time.Now().Sub(start), // latency = (current time) -(ping start time)
 	}
 	if err != nil || res.StatusCode != http.StatusOK {

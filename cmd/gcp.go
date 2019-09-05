@@ -43,12 +43,12 @@ var gcpCmd = &cobra.Command{
 		tr.Flush()
 
 		for r, i := range gcp.GCPEndpoints {
-			e := ping.Endpoints{
+			p := ping.PingDto{
 				Region:  r,
 				Name:    gcp.GCPRegions[r],
 				Address: i,
 			}
-			e.Ping()
+			p.Ping()
 		}
 	},
 }
