@@ -15,18 +15,6 @@ import (
 	"github.com/fatih/color"
 )
 
-type PingOption struct {
-	icmp bool
-	top  bool
-}
-
-type PingDto struct {
-	Region  string
-	Name    string
-	Address string
-	Latency time.Duration
-}
-
 const (
 	httpsTemplate = `` +
 		`  DNS Lookup   TCP Connection   TLS Handshake   Server Processing   Content Transfer` + "\n" +
@@ -38,6 +26,18 @@ const (
 		`                                                     starttransfer:%s        |` + "\n" +
 		`                                                                                total:%s` + "\n"
 )
+
+type PingOption struct {
+	icmp bool
+	top  bool
+}
+
+type PingDto struct {
+	Region  string
+	Name    string
+	Address string
+	Latency time.Duration
+}
 
 func (p *PingDto) TestPrint() {
 	fmt.Println("Region: " + p.Region)
@@ -72,7 +72,15 @@ func (p *PingDto) Ping() {
 		fmt.Fprintf(tr, "[%v]\t[%v]\tPing failed with status code: %v", result.Region, result.Name, res.StatusCode)
 		fmt.Fprintln(tr)
 	} else {
-		fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, result.Latency)
+		lowLatency, _ := time.ParseDuration("100ms")
+		highLatency, _ := time.ParseDuration("500ms")
+		if result.Latency < lowLatency {
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.GreenString(result.Latency.String()))
+		} else if result.Latency < highLatency {
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.YellowString(result.Latency.String()))
+		} else {
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.RedString(result.Latency.String()))
+		}
 		fmt.Fprintln(tr)
 	}
 
