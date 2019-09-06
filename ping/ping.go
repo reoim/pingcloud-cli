@@ -89,48 +89,68 @@ func (p *PingDto) VerbosePing() {
 		log.Fatal(err)
 	}
 
-	var start, connect, dns, tlsHandshake, tlsHandshakeEnd, firstResponse time.Time
+	var dnsStart, dnsEnd, tcpConnectStart, tcpConnectEnd, tlsHandshakeStart, tlsHandshakeEnd, serverStart, serverEnd, httpEnd time.Time
 
-	t := TimeTrace{}
 	trace := &httptrace.ClientTrace{
-		DNSStart: func(dsi httptrace.DNSStartInfo) { dns = time.Now() },
+		DNSStart: func(dsi httptrace.DNSStartInfo) { dnsStart = time.Now() },
 		DNSDone: func(ddi httptrace.DNSDoneInfo) {
-			// fmt.Printf("DNS Done: %v\n", time.Since(dns))
-			t.DNSLookup = time.Since(dns)
+			dnsEnd = time.Now()
 		},
 
-		ConnectStart: func(network, addr string) { connect = time.Now() },
+		ConnectStart: func(network, addr string) {
+			tcpConnectStart = time.Now()
+
+			if dnsStart.IsZero() {
+				dnsStart = tcpConnectStart
+				dnsEnd = tcpConnectStart
+			}
+		},
 		ConnectDone: func(network, addr string, err error) {
-			// fmt.Printf("Connect time: %v\n", time.Since(connect))
-			t.TCPConnect = time.Since(connect)
-			t.ConnectTotal = time.Since(dns)
+			tcpConnectEnd = time.Now()
 		},
 
-		TLSHandshakeStart: func() { tlsHandshake = time.Now() },
+		TLSHandshakeStart: func() { tlsHandshakeStart = time.Now() },
 		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
-			// fmt.Printf("TLS Handshake: %v\n", time.Since(tlsHandshake))
 			tlsHandshakeEnd = time.Now()
-			t.TLSHandshake = time.Since(tlsHandshake)
-			t.PreTransfer = time.Since(dns)
+		},
+
+		WroteRequest: func(info httptrace.WroteRequestInfo) {
+			serverStart = time.Now()
+
+			if tlsHandshakeStart.IsZero() {
+				tlsHandshakeStart = serverStart
+				tlsHandshakeEnd = serverStart
+			}
 		},
 
 		GotFirstResponseByte: func() {
-			// fmt.Printf("Time from start to first byte: %v\n", time.Since(start))
-			firstResponse = time.Now()
-			t.ServerProcess = time.Since(tlsHandshakeEnd)
-			t.StartTransfer = time.Since(dns)
+			serverEnd = time.Now()
 		},
 	}
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-	start = time.Now()
 	if _, err := http.DefaultTransport.RoundTrip(req); err != nil {
 		log.Fatal(err)
 	}
-	// fmt.Printf("Total time: %v\n", time.Since(start))
-	t.ContentTransfer = time.Since(firstResponse)
-	t.TotalTime = time.Since(start)
+	httpEnd = time.Now()
+	t := TimeTrace{
+		DNSLookup:       dnsEnd.Sub(dnsStart),
+		TCPConnect:      tcpConnectEnd.Sub(tcpConnectStart),
+		TLSHandshake:    tlsHandshakeEnd.Sub(tlsHandshakeStart),
+		ServerProcess:   serverEnd.Sub(serverStart),
+		ContentTransfer: httpEnd.Sub(serverEnd),
+		NameLookup:      dnsEnd.Sub(dnsStart),
+		ConnectTotal:    tcpConnectEnd.Sub(dnsStart),
+		PreTransfer:     tlsHandshakeEnd.Sub(dnsStart),
+		StartTransfer:   serverEnd.Sub(dnsStart),
+		TotalTime:       httpEnd.Sub(dnsStart),
+	}
+
+	fmt.Println("")
+	fmt.Printf("HTTP(S) trace of region [%v] - %v\n", p.Region, p.Name)
+	fmt.Println("-------------------------------------------------------------------------------------------")
 	t.PrintHttpTrace()
+	fmt.Println("-------------------------------------------------------------------------------------------")
 }
 
 type TimeTrace struct {
@@ -139,12 +159,15 @@ type TimeTrace struct {
 	TLSHandshake    time.Duration
 	ServerProcess   time.Duration
 	ContentTransfer time.Duration
+	NameLookup      time.Duration
 	ConnectTotal    time.Duration
 	PreTransfer     time.Duration
 	StartTransfer   time.Duration
 	TotalTime       time.Duration
 }
 
+/* Below codes are from https://github.com/reoim/httpstat-1
+They are slightly different from the original codes. But I used the same template and print format. */
 func (t *TimeTrace) PrintHttpTrace() {
 
 	fmta := func(d time.Duration) string {
@@ -162,16 +185,16 @@ func (t *TimeTrace) PrintHttpTrace() {
 	}
 
 	printf(colorize(httpsTemplate),
-		fmta(t.DNSLookup),       // dns lookup
-		fmta(t.TCPConnect),      // tcp connection
-		fmta(t.TLSHandshake),    // tls handshake
-		fmta(t.ServerProcess),   // server processing
-		fmta(t.ContentTransfer), // content transfer
-		fmtb(t.DNSLookup),       // namelookup
-		fmtb(t.ConnectTotal),    // connect
-		fmtb(t.PreTransfer),     // pretransfer
-		fmtb(t.StartTransfer),   // starttransfer
-		fmtb(t.TotalTime),       // total
+		fmta(t.DNSLookup),
+		fmta(t.TCPConnect),
+		fmta(t.TLSHandshake),
+		fmta(t.ServerProcess),
+		fmta(t.ContentTransfer),
+		fmtb(t.DNSLookup),
+		fmtb(t.ConnectTotal),
+		fmtb(t.PreTransfer),
+		fmtb(t.StartTransfer),
+		fmtb(t.TotalTime),
 	)
 }
 
