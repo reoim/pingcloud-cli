@@ -27,11 +27,6 @@ const (
 		`                                                                                total:%s` + "\n"
 )
 
-type PingOption struct {
-	icmp bool
-	top  bool
-}
-
 type PingDto struct {
 	Region  string
 	Name    string
@@ -62,24 +57,19 @@ func (p *PingDto) Ping() {
 	// Send request by default HTTP client
 	client := http.DefaultClient
 	res, err := client.Do(req)
-	result := PingDto{
-		Region:  p.Region,
-		Name:    p.Name,
-		Address: p.Address,
-		Latency: time.Since(start), // latency = (current time) -(ping start time)
-	}
 	if err != nil || res.StatusCode != http.StatusOK {
-		fmt.Fprintf(tr, "[%v]\t[%v]\tPing failed with status code: %v", result.Region, result.Name, res.StatusCode)
+		fmt.Fprintf(tr, "[%v]\t[%v]\tPing failed with status code: %v", p.Region, p.Name, res.StatusCode)
 		fmt.Fprintln(tr)
 	} else {
-		lowLatency, _ := time.ParseDuration("100ms")
-		highLatency, _ := time.ParseDuration("500ms")
-		if result.Latency < lowLatency {
-			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.GreenString(result.Latency.String()))
-		} else if result.Latency < highLatency {
-			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.YellowString(result.Latency.String()))
+		p.Latency = time.Since(start)
+		lowLatency, _ := time.ParseDuration("200ms")
+		highLatency, _ := time.ParseDuration("999ms")
+		if p.Latency < lowLatency {
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", p.Region, p.Name, color.GreenString(p.Latency.String()))
+		} else if p.Latency < highLatency {
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", p.Region, p.Name, color.YellowString(p.Latency.String()))
 		} else {
-			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", result.Region, result.Name, color.RedString(result.Latency.String()))
+			fmt.Fprintf(tr, "[%v]\t[%v]\t%v", p.Region, p.Name, color.RedString(p.Latency.String()))
 		}
 		fmt.Fprintln(tr)
 	}
