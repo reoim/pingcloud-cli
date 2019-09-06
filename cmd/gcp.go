@@ -25,33 +25,51 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// used for flags
-var region string
+// used for local flags
+var list bool
 
 // gcpCmd represents the gcp command
 var gcpCmd = &cobra.Command{
 	Use:   "gcp",
-	Short: "Ping GCP regions",
-	Long:  `Ping GCP regions and print median latency.`,
+	Short: "Report HTTP, Ping(ICMP) latencies of GCP regions",
+	Long:  `Report HTTP, Ping(ICMP) latencies of GCP regions`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// Init tabwriter
-		tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-		fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
-		fmt.Fprintln(tr)
-		fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
-		fmt.Fprintln(tr)
+		if len(args) == 0 {
+			fmt.Println("")
+			// Init tabwriter
+			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
+			fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
+			fmt.Fprintln(tr)
+			fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
+			fmt.Fprintln(tr)
 
-		// Flush tabwriter
-		tr.Flush()
+			// Flush tabwriter
+			tr.Flush()
 
-		for r, i := range gcp.GCPEndpoints {
-			p := ping.PingDto{
-				Region:  r,
-				Name:    gcp.GCPRegions[r],
-				Address: i,
+			for r, i := range gcp.GCPEndpoints {
+				p := ping.PingDto{
+					Region:  r,
+					Name:    gcp.GCPRegions[r],
+					Address: i,
+				}
+				p.Ping()
 			}
-			p.Ping()
+		} else {
+			for _, r := range args {
+				if i, ok := gcp.GCPEndpoints[r]; ok {
+					p := ping.PingDto{
+						Region:  r,
+						Name:    gcp.GCPRegions[r],
+						Address: i,
+					}
+					p.VerbosePing()
+				} else {
+					fmt.Printf("Region code [%v] is wrong.  To check available region codes run the command with -l flag\n", r)
+					fmt.Printf("ex> pingcloud gcp -l\n")
+				}
+			}
+
 		}
 
 	},
@@ -59,7 +77,8 @@ var gcpCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(gcpCmd)
-	gcpCmd.Flags().StringVarP(&region, "region", "r", "", "Print http trace time information of the region.")
+
+	gcpCmd.Flags().BoolVarP(&list, "list", "l", false, "List all available regions")
 
 	// Here you will define your flags and configuration settings.
 

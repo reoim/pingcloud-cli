@@ -47,3 +47,8 @@ func Execute() {
 		os.Exit(1)
 	}
 }
+
+func init() {
+	rootCmd.PersistentFlags().BoolP("ping", "p", false, "Ping(ICMP) to all regions.")
+	rootCmd.PersistentFlags().BoolP("top", "t", false, "Print top 3 low latency regions.")
+}
