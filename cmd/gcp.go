@@ -31,15 +31,28 @@ var list bool
 // gcpCmd represents the gcp command
 var gcpCmd = &cobra.Command{
 	Use:   "gcp",
-	Short: "Report HTTP, Ping(ICMP) latencies of GCP regions",
-	Long:  `Report HTTP, Ping(ICMP) latencies of GCP regions`,
+	Short: "Check latencies of GCP regions.",
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("")
+		if list {
 
-		if len(args) == 0 {
-			fmt.Println("")
 			// Init tabwriter
 			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-			fmt.Fprintf(tr, "Region Code\tRegion Name\tLatency")
+			fmt.Fprintf(tr, "GCP Region Code\tGCP Region Name")
+			fmt.Fprintln(tr)
+			fmt.Fprintf(tr, "------------------------------\t------------------------------")
+			fmt.Fprintln(tr)
+			for r, n := range gcp.GCPRegions {
+				fmt.Fprintf(tr, "[%v]\t[%v]", r, n)
+				fmt.Fprintln(tr)
+			}
+			// Flush tabwriter
+			tr.Flush()
+		} else if len(args) == 0 {
+
+			// Init tabwriter
+			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
+			fmt.Fprintf(tr, "GCP Region Code\tGCP Region Name\tLatency")
 			fmt.Fprintln(tr)
 			fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
 			fmt.Fprintln(tr)
@@ -55,6 +68,9 @@ var gcpCmd = &cobra.Command{
 				}
 				p.Ping()
 			}
+			fmt.Println("")
+			fmt.Println("You can also add region after command if you want http trace information of the specific region")
+			fmt.Println("ex> pingcloud-cli gcp us-central1")
 		} else {
 			for _, r := range args {
 				if i, ok := gcp.GCPEndpoints[r]; ok {
@@ -65,12 +81,15 @@ var gcpCmd = &cobra.Command{
 					}
 					p.VerbosePing()
 				} else {
-					fmt.Printf("Region code [%v] is wrong.  To check available region codes run the command with -l flag\n", r)
-					fmt.Printf("ex> pingcloud gcp -l\n")
+					fmt.Printf("Region code [%v] is wrong.  To check available region codes run the command with -l or --list flag\n", r)
+					fmt.Println("Usage: pingcloud-cli gcp -l")
+					fmt.Println("Usage: pingcloud-cli gcp --list")
+
 				}
 			}
 
 		}
+		fmt.Println("")
 
 	},
 }
