@@ -26,14 +26,13 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "pingcloud-cli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use: "pingcloud-cli",
+	Long: `
+Thank you for using pingcloud-cli.
+pingcloud-cli is command line tools to check latency and http trace from AWS, GCP and Azure regions.
+You can download the latest version from https://github.com/reoim/pingcloud-cli
+Any feedback is welcome.
+`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -46,9 +45,4 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.PersistentFlags().BoolP("ping", "p", false, "Ping(ICMP) to all regions.")
-	rootCmd.PersistentFlags().BoolP("top", "t", false, "Print top 3 low latency regions.")
 }
