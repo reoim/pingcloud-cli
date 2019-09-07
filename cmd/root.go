@@ -30,8 +30,8 @@ var rootCmd = &cobra.Command{
 	Long: `
 Thank you for using pingcloud-cli.
 pingcloud-cli is command line tools to check latency and http trace from AWS, GCP and Azure regions.
-You can download the latest version from https://github.com/reoim/pingcloud-cli
-Any feedback is welcome.
+You can download codes from https://github.com/reoim/pingcloud-cli
+Any feedback is welcome. (And stars..)
 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
