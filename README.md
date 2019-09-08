@@ -96,7 +96,7 @@ List all region codes and region names of the cloud provider. Add -l or --list f
 
 
 
-## Note
+## Notes
 Instances for latency test are not maintained by me. 
 
 Endpoints for AWS are from [EC2 Reachability Test](http://ec2-reachability.amazonaws.com/).
@@ -109,3 +109,7 @@ Endpoints from Azure have domain name and uses https but AWS, GCP endpoints are 
 
 So latencies from Azure are relatively high compare to AWS and GCP because it needs domain loockup and tls handshaking.
 
+### 2019-09-08
+Changed Azure test endpoints https -> http.
+
+No more TLS handshaking time.
