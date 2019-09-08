@@ -57,7 +57,11 @@ func (p *PingDto) Ping() {
 	// Send request by default HTTP client
 	client := http.DefaultClient
 	res, err := client.Do(req)
-	if err != nil || res.StatusCode != http.StatusOK {
+	if err != nil || res == nil {
+		log.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusOK {
 		fmt.Fprintf(tr, "[%v]\t[%v]\tPing failed with status code: %v", p.Region, p.Name, res.StatusCode)
 		fmt.Fprintln(tr)
 	} else {
