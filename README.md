@@ -68,19 +68,20 @@ Use "pingcloud-cli [command] --help" for more information about a command.
       ```
     * Windows
 
-    1.  Open **System** in **Control panel**
-    2.  In the **System** window, click the **Advanced system settings** 
-    3.  In the System Properties window, click on the **Advanced** tab, then click the **Environment Variables** button near the bottom of the tab
+      * Open **System** in **Control panel**
+      * In the **System** window, click the **Advanced system settings** 
+      * In the System Properties window, click on the **Advanced** tab, then click the **Environment Variables** button near the bottom of the tab
+
         ![windows env setting](/assets/images/winenv.jpg)
-    4.  In the Environment Variables window, click the **New** button of the **User variables** section
-    5.  Set **Variable name** as `PINGCLOUD_DIR`
-    6.  Set **Variable value** as absolute path of `pingcloud-cli` directory like as shown below.
+      * In the Environment Variables window, click the **New** button of the **User variables** section
+      * Set **Variable name** as `PINGCLOUD_DIR`
+      * Set **Variable value** as absolute path of `pingcloud-cli` directory like as shown below.
         ```
         C:\Users\reolee\Downloads\pingcloud-cli
         ```
-    7.  Click **OK** button
-    8.  Open new cmd and run `echo %PINGCLOUD_DIR%`
-    9.  Output should be like this (example)
+      * Click **OK** button
+      * Open new cmd and run `echo %PINGCLOUD_DIR%`
+      * Output should be like this (example)
         ```
         C:\Users\reolee\Downloads\pingcloud-cli
         ```
