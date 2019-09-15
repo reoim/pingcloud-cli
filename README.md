@@ -48,6 +48,42 @@ Use "pingcloud-cli [command] --help" for more information about a command.
 2.  Run `GO111MODULE=on go mod vendor`
 3.  Run `go build -v`
 4.  Run `go install`
+5.  Set Environment variable `PINGCLOUD_DIR` as your pingcloud-cli directory(absolute path). 
+    * Linux & Mac
+    
+      Add following code to your `.profile` or `.bash_profile`. 
+      
+      Make sure change `[YOUR pingcloud-cli DIR]` to absolute path of the git cloned directory.
+      ```
+      # pingcloud-cli settings
+      export PINGCLOUD_DIR="[YOUR pingcloud-cli DIR]"
+      ```
+      Restart terminal and check if `PINGCLOUD_DIR` is set proferly.
+      ```
+      echo $PINGCLOUD_DIR
+      ```
+      Output should be like this (example)
+      ```
+      /Users/reolee/Downloads/pingcloud-cli
+      ```
+    * Windows
+
+    1.  Open **System** in **Control panel**
+    2.  In the **System** window, click the **Advanced system settings** 
+    3.  In the System Properties window, click on the **Advanced** tab, then click the **Environment Variables** button near the bottom of the tab
+        ![windows env setting](/assets/images/winenv.jpg)
+    4.  In the Environment Variables window, click the **New** button of the **User variables** section
+    5.  Set **Variable name** as `PINGCLOUD_DIR`
+    6.  Set **Variable value** as absolute path of `pingcloud-cli` directory like as shown below.
+        ```
+        C:\Users\reolee\Downloads\pingcloud-cli
+        ```
+    7.  Click **OK** button
+    8.  Open new cmd and run `echo %PINGCLOUD_DIR%`
+    9.  Output should be like this (example)
+        ```
+        C:\Users\reolee\Downloads\pingcloud-cli
+        ```
 
 
 ## Usage
@@ -94,6 +130,12 @@ List all region codes and region names of the cloud provider. Add -l or --list f
 
 ![pingcloud-cli gcp -l](/assets/images/gcp-list.png) 
 
+### Add/Edit/Delete regions
+You can add/edit/delete regions by manifulating endpoints CSV files.
+
+The CSV files of cloud platforms are located in `pingcloud-cli/endpoints` folder.
+
+Make sure you follw the original csv format of the files.
 
 
 ## Notes
@@ -113,3 +155,8 @@ So latencies from Azure are relatively high compare to AWS and GCP because it ne
 Changed Azure test endpoints https -> http.
 
 No more TLS handshaking time.
+
+### 2019-09-16
+Removed endpoint information from code.
+
+pingcloud-cli will read the endpoint information from external csv files which can be edited anytime by user.

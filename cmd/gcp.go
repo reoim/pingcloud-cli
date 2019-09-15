@@ -16,12 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"text/tabwriter"
-
 	"github.com/reoim/pingcloud-cli/ping"
-	"github.com/reoim/pingcloud-cli/ping/gcp"
 	"github.com/spf13/cobra"
 )
 
@@ -33,63 +28,14 @@ var gcpCmd = &cobra.Command{
 	Use:   "gcp",
 	Short: "Check latencies of GCP regions.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("")
-		if list {
-
-			// Init tabwriter
-			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-			fmt.Fprintf(tr, "GCP Region Code\tGCP Region Name")
-			fmt.Fprintln(tr)
-			fmt.Fprintf(tr, "------------------------------\t------------------------------")
-			fmt.Fprintln(tr)
-			for r, n := range gcp.GCPRegions {
-				fmt.Fprintf(tr, "[%v]\t[%v]", r, n)
-				fmt.Fprintln(tr)
-			}
-			// Flush tabwriter
-			tr.Flush()
-		} else if len(args) == 0 {
-
-			// Init tabwriter
-			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-			fmt.Fprintf(tr, "GCP Region Code\tGCP Region Name\tLatency")
-			fmt.Fprintln(tr)
-			fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
-			fmt.Fprintln(tr)
-
-			// Flush tabwriter
-			tr.Flush()
-
-			for r, i := range gcp.GCPEndpoints {
-				p := ping.PingDto{
-					Region:  r,
-					Name:    gcp.GCPRegions[r],
-					Address: i,
-				}
-				p.Ping()
-			}
-			fmt.Println("")
-			fmt.Println("You can also add region after command if you want http trace information of the specific region")
-			fmt.Println("ex> pingcloud-cli gcp us-central1")
-		} else {
-			for _, r := range args {
-				if i, ok := gcp.GCPEndpoints[r]; ok {
-					p := ping.PingDto{
-						Region:  r,
-						Name:    gcp.GCPRegions[r],
-						Address: i,
-					}
-					p.VerbosePing()
-				} else {
-					fmt.Printf("Region code [%v] is wrong.  To check available region codes run the command with -l or --list flag\n", r)
-					fmt.Println("Usage: pingcloud-cli gcp -l")
-					fmt.Println("Usage: pingcloud-cli gcp --list")
-
-				}
-			}
-
+		c := ping.CmdOption{
+			Option:     "gcp",
+			OptionName: "GCP",
+			ListFlg:    list,
+			Args:       args,
 		}
-		fmt.Println("")
+
+		c.StartCmd()
 
 	},
 }

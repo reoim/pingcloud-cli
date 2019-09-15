@@ -16,12 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"text/tabwriter"
-
 	"github.com/reoim/pingcloud-cli/ping"
-	"github.com/reoim/pingcloud-cli/ping/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -30,62 +25,14 @@ var awsCmd = &cobra.Command{
 	Use:   "aws",
 	Short: "Check latencies of AWS regions.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("")
-		if list {
-
-			// Init tabwriter
-			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-			fmt.Fprintf(tr, "AWS Region Code\tAWS Region Name")
-			fmt.Fprintln(tr)
-			fmt.Fprintf(tr, "------------------------------\t------------------------------")
-			fmt.Fprintln(tr)
-			for r, n := range aws.AWSRegions {
-				fmt.Fprintf(tr, "[%v]\t[%v]", r, n)
-				fmt.Fprintln(tr)
-			}
-			// Flush tabwriter
-			tr.Flush()
-		} else if len(args) == 0 {
-
-			// Init tabwriter
-			tr := tabwriter.NewWriter(os.Stdout, 40, 8, 2, '\t', 0)
-			fmt.Fprintf(tr, "AWS Region Code\tAWS Region Name\tLatency")
-			fmt.Fprintln(tr)
-			fmt.Fprintf(tr, "------------------------------\t------------------------------\t------------------------------")
-			fmt.Fprintln(tr)
-
-			// Flush tabwriter
-			tr.Flush()
-
-			for r, i := range aws.AWSEndpoints {
-				p := ping.PingDto{
-					Region:  r,
-					Name:    aws.AWSRegions[r],
-					Address: i,
-				}
-				p.Ping()
-			}
-			fmt.Println("")
-			fmt.Println("You can also add region after command if you want http trace information of the specific region")
-			fmt.Println("ex> pingcloud-cli aws us-east-1")
-		} else {
-			for _, r := range args {
-				if i, ok := aws.AWSEndpoints[r]; ok {
-					p := ping.PingDto{
-						Region:  r,
-						Name:    aws.AWSRegions[r],
-						Address: i,
-					}
-					p.VerbosePing()
-				} else {
-					fmt.Printf("Region code [%v] is wrong.  To check available region codes run the command with -l or --list flag\n", r)
-					fmt.Println("Usage: pingcloud-cli aws -l")
-					fmt.Println("Usage: pingcloud-cli aws --list")
-
-				}
-			}
+		c := ping.CmdOption{
+			Option:     "aws",
+			OptionName: "AWS",
+			ListFlg:    list,
+			Args:       args,
 		}
-		fmt.Println("")
+
+		c.StartCmd()
 	},
 }
 
