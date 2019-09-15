@@ -131,7 +131,7 @@ List all region codes and region names of the cloud provider. Add -l or --list f
 
 ![pingcloud-cli gcp -l](/assets/images/gcp-list.png) 
 
-### Add/Edit/Delete regions
+## Add/Edit/Delete regions
 You can add/edit/delete regions by manifulating endpoints CSV files.
 
 The CSV files of cloud platforms are located in `pingcloud-cli/endpoints` folder.
