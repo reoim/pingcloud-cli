@@ -58,7 +58,7 @@ Use "pingcloud-cli [command] --help" for more information about a command.
       # pingcloud-cli settings
       export PINGCLOUD_DIR="[YOUR pingcloud-cli DIR]"
       ```
-      Restart terminal and check if `PINGCLOUD_DIR` is set proferly.
+      Restart terminal and check if `PINGCLOUD_DIR` is set properly.
       ```
       echo $PINGCLOUD_DIR
       ```
