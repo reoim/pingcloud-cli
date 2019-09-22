@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"text/tabwriter"
 	"time"
 
@@ -28,6 +29,8 @@ const (
 		`                                                     starttransfer:%s        |` + "\n" +
 		`                                                                                total:%s` + "\n"
 )
+
+var wait sync.WaitGroup
 
 // CmdOption is to save cmd option
 type CmdOption struct {
@@ -59,6 +62,9 @@ func (c *CmdOption) StartCmd() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Add number of goroutine(number of endpoints) that will be waited
+	wait.Add(len(endpoints))
 
 	if c.ListFlg {
 
@@ -92,8 +98,9 @@ func (c *CmdOption) StartCmd() {
 				Name:    regions[r],
 				Address: i,
 			}
-			p.Ping()
+			go p.Ping()
 		}
+		wait.Wait() // Wait until the last goroutine finishes
 		fmt.Println("")
 		fmt.Println("You can also add region after command if you want http trace information of the specific region")
 		if c.Option == "gcp" {
@@ -209,7 +216,7 @@ func (p *PingDto) Ping() {
 
 	// Flush tabwriter
 	tr.Flush()
-
+	wait.Done()
 }
 
 // VerbosePing send HTTP(S) request to endpoint and report its respons time in httpstat style
